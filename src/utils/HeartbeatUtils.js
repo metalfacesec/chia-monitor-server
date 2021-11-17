@@ -3,6 +3,7 @@ const DbUtils = require('./DbUtils');
 class HeartbeatUtils {
 	static async log(ip) {
 		try {
+			// TODO: Method me
 			let clientID = null;
 			let client = await DbUtils.query(`SELECT * FROM client WHERE ip = '${ip}' LIMIT 1`);
 

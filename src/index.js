@@ -4,6 +4,7 @@ const DbUtils = require('./utils/DbUtils');
 const DeviceUtils = require('./utils/DeviceUtils');
 const RequestUtils = require('./utils/RequestUtils');
 const HeartbeatUtils = require('./utils/HeartbeatUtils');
+const SystemLogUtils = require('./utils/SystemLogUtils');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -18,6 +19,18 @@ app.post('/log-heartbeat', function (req, res) {
 	HeartbeatUtils.log(ip);
 	
 	res.send('Hello World');
+});
+
+app.post('/log-system-stats', async function (req, res) {
+	if (typeof req.body.total_memory === 'undefined' || typeof req.body.free_memory === 'undefined') {
+		return res.send({status: 500});
+	}
+
+	let ip = RequestUtils.getIpFromRequest(req);
+	
+	await SystemLogUtils.insert(ip, req.body.total_memory, req.body.free_memory);
+	
+	res.send({status: 200});
 });
 
 app.post('/register', function (req, res) {
