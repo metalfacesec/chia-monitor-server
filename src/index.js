@@ -1,5 +1,6 @@
 const express = require('express');
 const DbUtils = require('./utils/DbUtils');
+const DeviceUtils = require('./utils/DeviceUtils');
 const RequestUtils = require('./utils/RequestUtils');
 const HeartbeatUtils = require('./utils/HeartbeatUtils');
 
@@ -21,6 +22,15 @@ app.post('/register', function (req, res) {
 	Client.create(ip);
 	
 	res.send('Hello World');
+});
+
+app.get('/devices', async function (req, res) {
+	try {
+		let devices = await DeviceUtils.getAll();
+		res.send({status: 200, data: devices});
+	} catch (err) {
+		res.send({status: 500, data: []});
+	}
 });
 
 var server = app.listen(8081, function () {
