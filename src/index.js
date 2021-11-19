@@ -5,6 +5,7 @@ const DeviceUtils = require('./utils/DeviceUtils');
 const RequestUtils = require('./utils/RequestUtils');
 const HeartbeatUtils = require('./utils/HeartbeatUtils');
 const SystemLogUtils = require('./utils/SystemLogUtils');
+const BlockchainUtils = require('./utils/BlockchainUtils');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -57,6 +58,21 @@ app.get('/device-heartbeat-log', async function (req, res) {
 	try {
 		let devices = await DeviceUtils.getDeviceHeartbeatLog(req.query.id, 50);
 		res.send({status: 200, data: devices});
+	} catch (err) {
+		res.send({status: 500, data: []});
+	}
+});
+
+app.get('/log-blockchain-size', async function (req, res) {
+	if (typeof req.query.size === 'undefined') {
+		return res.send({status: 500});
+	}
+
+	let ip = RequestUtils.getIpFromRequest(req);
+	
+	try {
+		await BlockchainUtils.insert(ip, req.query.size);
+		res.send({status: 200});
 	} catch (err) {
 		res.send({status: 500, data: []});
 	}
