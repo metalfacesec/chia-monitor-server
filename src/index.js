@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const DbUtils = require('./utils/DbUtils');
+const WalletUtils = require('./utils/WalletUtils');
 const DeviceUtils = require('./utils/DeviceUtils');
 const RequestUtils = require('./utils/RequestUtils');
 const HeartbeatUtils = require('./utils/HeartbeatUtils');
@@ -13,6 +14,28 @@ app.use(bodyParser.json());
 
 app.get('/connect', function (req, res) {
 	res.send('Hello World');
+});
+
+app.post('/log_wallet_info', async function (req, res) {
+	if (typeof req.body.wallets === 'undefined') {
+		return res.send({status: 500});
+	}
+
+	let ip = RequestUtils.getIpFromRequest(req);
+
+	req.body.wallets.forEach(async wallet => {
+		let walletId = await WalletUtils.getOrCreateByWalletId(wallet.wallet_id, ip);
+		await WalletUtils.insertBalance(walletId, wallet.confirmed_wallet_balance);
+	});
+
+	return res.send({status: 500, data: []});
+	
+	try {
+		await BlockchainUtils.insert(ip, req.query.size);
+		res.send({status: 200});
+	} catch (err) {
+		res.send({status: 500, data: []});
+	}
 });
 
 app.post('/log-heartbeat', function (req, res) {
