@@ -12,10 +12,6 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get('/connect', function (req, res) {
-	res.send('Hello World');
-});
-
 app.post('/log_wallet_info', async function (req, res) {
 	if (typeof req.body.wallets === 'undefined') {
 		return res.send({status: 500});
@@ -28,21 +24,14 @@ app.post('/log_wallet_info', async function (req, res) {
 		await WalletUtils.insertBalance(walletId, wallet.confirmed_wallet_balance);
 	});
 
-	return res.send({status: 500, data: []});
-	
-	try {
-		await BlockchainUtils.insert(ip, req.query.size);
-		res.send({status: 200});
-	} catch (err) {
-		res.send({status: 500, data: []});
-	}
+	return res.send({status: 200, data: []});
 });
 
 app.post('/log-heartbeat', function (req, res) {
 	let ip = RequestUtils.getIpFromRequest(req);
 	HeartbeatUtils.log(ip);
 	
-	res.send('Hello World');
+	res.send({status: 200});
 });
 
 app.post('/log-system-stats', async function (req, res) {
@@ -61,7 +50,7 @@ app.post('/register', function (req, res) {
 	let ip = RequestUtils.getIpFromRequest(req);
 	Client.create(ip);
 	
-	res.send('Hello World');
+	res.send({status: 200});
 });
 
 app.get('/devices', async function (req, res) {
