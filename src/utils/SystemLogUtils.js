@@ -14,6 +14,11 @@ class SystemLogUtils {
 
 		return await DbUtils.insertOne("INSERT INTO system_log (clientId, totalMemory, freeMemory) VALUES (?,?,?)", [clientId, total_memory, free_memory]);
 	}
+
+	static async get() {
+		let log = await DbUtils.query(`SELECT * FROM system_log ORDER BY created DESC LIMIT 20`);
+		return log;
+	}
 }
 
 module.exports = SystemLogUtils;

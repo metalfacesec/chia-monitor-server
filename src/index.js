@@ -8,9 +8,15 @@ const HeartbeatUtils = require('./utils/HeartbeatUtils');
 const SystemLogUtils = require('./utils/SystemLogUtils');
 const BlockchainUtils = require('./utils/BlockchainUtils');
 
+var cors = require('cors');
+
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(cors({
+    origin: '*'
+}));
 
 app.post('/log_wallet_info', async function (req, res) {
 	if (typeof req.body.wallets === 'undefined') {
@@ -44,6 +50,13 @@ app.post('/log-system-stats', async function (req, res) {
 	await SystemLogUtils.insert(ip, req.body.total_memory, req.body.free_memory);
 	
 	res.send({status: 200});
+});
+
+
+app.get('/get-system-stats', async function (req, res) {
+	let data = await SystemLogUtils.get();
+	
+	res.send({status: 200, data: data});
 });
 
 app.post('/register', function (req, res) {
